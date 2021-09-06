@@ -976,7 +976,7 @@ class Zui {
 		highlightAnchor = cursorX;
 	}
 
-	public function button(text: String, align = Align.Center, label = ""): Bool {
+	public function button(text: String, align = Align.Center, label = "", ?color: Int, ?hoverColor: Int, ?pressedColor: Int): Bool {
 		if (!isVisible(ELEMENT_H())) {
 			endElement();
 			return false;
@@ -986,9 +986,9 @@ class Zui {
 		var hover = getHover();
 		if (released) changed = true;
 
-		g.color = pushed ? t.BUTTON_PRESSED_COL :
-				  hover ? t.BUTTON_HOVER_COL :
-				  t.BUTTON_COL;
+		g.color = pushed ? (pressedColor != null ? pressedColor : t.BUTTON_PRESSED_COL) :
+				  hover ? (hoverColor != null ? hoverColor : t.BUTTON_HOVER_COL) :
+				  (color != null ? color : t.BUTTON_COL);
 
 		drawRect(g, t.FILL_BUTTON_BG, _x + buttonOffsetY, _y + buttonOffsetY, _w - buttonOffsetY * 2, BUTTON_H());
 
@@ -998,6 +998,27 @@ class Zui {
 			g.color = t.LABEL_COL;
 			drawString(g, label, null, 0, align == Align.Right ? Align.Left : Align.Right);
 		}
+
+		endElement();
+
+		return released;
+	}
+
+	public function buttonRect(width: Int, height: Int, ?color: Int, ?hoverColor: Int, ?pressedColor: Int): Bool {
+		if (!isVisible(ELEMENT_H())) {
+			endElement();
+			return false;
+		}
+		var released = getReleased();
+		var pushed = getPushed();
+		var hover = getHover();
+		if (released) changed = true;
+
+		g.color = pushed ? pressedColor :
+			hover ? hoverColor :
+			color;
+
+		drawRect(g, t.FILL_BUTTON_BG, _x + buttonOffsetY, _y + buttonOffsetY, width, height);
 
 		endElement();
 
